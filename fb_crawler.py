@@ -19,7 +19,7 @@ if __name__ == '__main__':
     driverOptions = webdriver.ChromeOptions()
     driverOptions.add_argument("--disable-popup-blocking")
     driverOptions.add_argument("--incognito")  #incognito window
-    #driverOptions.add_argument("--headless") #background execution
+    driverOptions.add_argument("--headless") #background execution
     driverOptions.add_argument("blink-settings=imagesEnabled=false") #wouldn't load image 
     driverOptions.add_argument("--no-sandbox") #privileged exec.
     driverOptions.add_argument("--disable-gpu")
@@ -44,10 +44,11 @@ if __name__ == '__main__':
     WebDriverWait(driver, 15).until(EC.presence_of_all_elements_located((By.CLASS_NAME, classname_background)))
     
     #crawling the page
+    print("Start crawling..")
     height = driver.execute_script('return window.document.documentElement.scrollHeight;')
     js = 'window.scrollTo(0, document.body.scrollHeight);'
     count_unmoved = 0 #for detecting the end of page
-    MAX_NUM_SCROLL = 20 #due to the limit of memory, you need to set the maximum times of scrolling the page
+    MAX_NUM_SCROLL = 500 #due to the limit of memory, you need to set the maximum times of scrolling the page
     count_scroll = 0
     driver.execute_script(js)
     time.sleep(2)
@@ -60,10 +61,11 @@ if __name__ == '__main__':
         height = driver.execute_script('return window.document.documentElement.scrollHeight;')
         driver.execute_script(js)
         if count_scroll % 10 == 0:
-            print(count_scroll)
+            print("It has scrolled {time} times.".format(time=count_scroll))
         time.sleep(2)
     
     #parsing the page
+    print("Start parsing..")
     soup = Soup(driver.page_source, 'lxml')
     driver.quit()
     frames = soup.find_all(class_='du4w35lb k4urcfbm l9j0dhe7 sjgh65i0')
@@ -99,6 +101,7 @@ if __name__ == '__main__':
         file.write("{a}, {b}, {c}, {d}\n".format(a=thumbs[index], b=dates[index],
                                                  c=comments[index], d=shares[index]))
     file.close()
+    print("Done")
 
 
         
